@@ -8,21 +8,32 @@ class App extends React.Component {
         super();
         this.state = {
             entries: ['Stefanie', 'Sepp', 'Alex'],
+            entryStore: ['Stefanie', 'Sepp', 'Alex'],
             currentValue: ''
         }
     }
     updateCurrentValue = (e) => {
         this.setState({
-            currentValue: e.target.value
-        })
+            currentValue: e.target.value,
+            entries: this.filter(new RegExp(e.target.value, 'i'))
+            })
     }
-    render() {
+
+    filter = (regex) => {
+        var names = this.state.entryStore;
+        return names.filter((param) => regex.test(param));
+    }
+    filterByName = (person) =>  {
+        return this.state.regex.test(person);
+    }
+
+    render(){
         return <div>
             <Input value={this.state.currentValue} onChange={this.updateCurrentValue}/><Button onClick={
         () => {
           this.setState({
             entries: [...this.state.entries, this.state.currentValue],
-            currentValue: ''
+            entryStore: [...this.state.entryStore, this.state.currentValue]
           })
         }
         }/>
