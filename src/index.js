@@ -9,7 +9,8 @@ class App extends React.Component {
         this.state = {
             entries: ['Stefanie', 'Sepp', 'Alex'],
             entryStore: ['Stefanie', 'Sepp', 'Alex'],
-            currentValue: ''
+            currentValue: '',
+            editValue: ''
         }
     }
     updateCurrentValue = (e) => {
@@ -18,22 +19,38 @@ class App extends React.Component {
             entries: this.filter(new RegExp(e.target.value, 'i'))
             })
     }
+    updateEditValue = (e) => {
+        this.setState({
+            editValue: e.target.value
+        })
+    }
 
     filter = (regex) => {
         var names = this.state.entryStore;
         return names.filter((param) => regex.test(param));
     }
-    filterByName = (person) =>  {
-        return this.state.regex.test(person);
-    }
+
     deletePerson = (id) => {
         this.setState({
-            entries: this.returnDeleted(this.state.entries, id.target.value)
+            entries: this.returnDeleted(this.state.entries, id.target.value),
+            entryStore: this.returnDeleted(this.state.entries, id.target.value)
         })
     }
 
     returnDeleted = (array, id) => {
         array.splice(id, 1);
+        return array;
+    }
+
+    editPerson = (id) => {
+        this.setState({
+            entries: this.returnEdited(this.state.entries, id.target.value),
+            entryStore: this.returnEdited(this.state.entries, id.target.value)
+        })
+    }
+
+    returnEdited = (array, id) => {
+        array[id] = this.state.editValue;
         return array;
     }
 
@@ -47,7 +64,8 @@ class App extends React.Component {
           })
         }
         }/>
-            <List entries={this.state.entries} deletePerson={this.deletePerson}/>
+            <Input value={this.state.editValue} onChange={this.updateEditValue}/>
+            <List entries={this.state.entries} deletePerson={this.deletePerson} editPerson={this.editPerson}/>
         </div>
     }
 }
@@ -57,18 +75,18 @@ function Button({value, onClick}) {
     >+</button>
 }
 
-function List({entries, deletePerson}) {
+function List({entries, deletePerson, editPerson}) {
     return <div>
         {
             entries.map(
                 (entry, index) =>
-                    <Person key={index} id={index} name={entry} deletePerson={deletePerson.bind(index)}/>)
+                    <Person key={index} id={index} name={entry} deletePerson={deletePerson.bind(index)} editPerson={editPerson.bind(index)}/>)
         }
     </div>
 }
 
-function Person ({id, name, deletePerson}) {
-    return <div className="person" >Name: {name}<Button value={id} onClick={deletePerson}/></div>
+function Person ({id, name, deletePerson, editPerson}) {
+    return <div className="person" >Name: {name}<Button value={id} onClick={deletePerson}/><Button value={id} onClick={editPerson}/></div>
 }
 Person.propTypes = {
     name: React.PropTypes.string
