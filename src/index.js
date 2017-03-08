@@ -26,6 +26,16 @@ class App extends React.Component {
     filterByName = (person) =>  {
         return this.state.regex.test(person);
     }
+    deletePerson = (id) => {
+        this.setState({
+            entries: this.returnDeleted(this.state.entries, id.target.value)
+        })
+    }
+
+    returnDeleted = (array, id) => {
+        array.splice(id, 1);
+        return array;
+    }
 
     render(){
         return <div>
@@ -37,28 +47,28 @@ class App extends React.Component {
           })
         }
         }/>
-            <List entries={this.state.entries}/>
+            <List entries={this.state.entries} deletePerson={this.deletePerson}/>
         </div>
     }
 }
 
-function Button({onClick}) {
-    return <button onClick={onClick}
+function Button({value, onClick}) {
+    return <button value={value} onClick={onClick}
     >+</button>
 }
 
-function List({entries}) {
+function List({entries, deletePerson}) {
     return <div>
         {
             entries.map(
                 (entry, index) =>
-                    <Person key={index} name={entry}/>)
+                    <Person key={index} id={index} name={entry} deletePerson={deletePerson.bind(index)}/>)
         }
     </div>
 }
 
-function Person ({name}) {
-    return <div className="person" >Name: {name}</div>
+function Person ({id, name, deletePerson}) {
+    return <div className="person" >Name: {name}<Button value={id} onClick={deletePerson}/></div>
 }
 Person.propTypes = {
     name: React.PropTypes.string
